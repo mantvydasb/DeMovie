@@ -1,6 +1,7 @@
 import bruter
 import xml.etree.ElementTree as xmlTree
 import re
+import conf
 from urllib import request
 
 class Torrent:
@@ -18,8 +19,8 @@ class Torrent:
 
 class DeMovie():
 
-    username = "kondencuotas"
-    password = "Spotless13"
+    username = conf.username
+    password = conf.password
 
     linkomaniaCookie = "PHPSESSID=d44a3mfqe1udekmfi54cb0p2h7;"
     linkomania = ''
