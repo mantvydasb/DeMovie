@@ -17,7 +17,7 @@ class Torrent:
         self.torrentLink = str(link).replace("details", "download").replace("&hit=1","") + '&name=' + title + "_.torrent"
         self.uploadDate = uploadDate
 
-class DeMovie():
+class Linkomanija():
 
     username = conf.username
     password = conf.password
@@ -75,7 +75,7 @@ class DeMovie():
     def getLatestMoviesFeed(self):
         return self.sendRequest(self.latestMovieFeed)
 
-movieSuggestor = DeMovie()
+movieSuggestor = Linkomanija()
 movieSuggestor.login()
 
 recentMoviesFeed = movieSuggestor.getLatestMoviesFeed()
