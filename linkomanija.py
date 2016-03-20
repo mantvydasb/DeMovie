@@ -1,15 +1,16 @@
 import bruter
 import xml.etree.ElementTree as xmlTree
+import sys
 import re
 import conf
 import results_parser
 
 
 class Torrent:
-    title = ''
+    title       = ''
     description = ''
-    link = ''
-    uploadDate = ''
+    link        = ''
+    uploadDate  = ''
 
     def __init__(self, title, description, link, uploadDate):
         self.title = title
@@ -20,15 +21,15 @@ class Torrent:
 
 
 class Linkomanija():
-    username = conf.username
-    password = conf.password
-    cookie = conf.cookie
-    bruter = ''
-    baseUrl = "https://www.linkomanija.net/"
-    loginUrl = baseUrl + "takelogin.php"
-    searchUrl = baseUrl + "browse.php?incldead=0&search="
-    latestMovieFeed = baseUrl + "rss.php?feed=link&cat[]=29&cat[]=52&cat[]=53&cat[]=61&passkey=14aba47f3165387ebaaf0aba38c140c2"
-    mySeries = [
+    username    = conf.username
+    password    = conf.password
+    cookie      = conf.cookie
+    bruter      = ''
+    baseUrl     = "https://www.linkomanija.net/"
+    loginUrl    = baseUrl + "takelogin.php"
+    searchUrl   = baseUrl + "browse.php?incldead=0&search="
+    moviesFeed  = baseUrl + "rss.php?feed=link&cat[]=29&cat[]=52&cat[]=53&cat[]=61&passkey=14aba47f3165387ebaaf0aba38c140c2"
+    mySeries    = [
         "the big bang theory",
         "the 100",
         "walking dead",
@@ -82,7 +83,7 @@ class Linkomanija():
         response = self.bruter.getUrlContent(url, self.bruter.headers)
         return response
 
-    def getDecentlyRatedMovies(self, torrents):
+    def extractDecentlyRatedMovies(self, torrents):
       for torrent in torrents:
             isDecentlyRated = re.search('(<b>Rating:<\/b> [6-9.]+\w)', torrent.description)
             if isDecentlyRated:
@@ -90,7 +91,7 @@ class Linkomanija():
                 print("[%s imdb] %s  [>]  %s \n%s \n" %(rating, torrent.title, torrent.link, torrent.torrentLink))
 
     def getLatestMoviesFeed(self):
-        moviesFeed = self.sendRequest(self.latestMovieFeed)
+        moviesFeed = self.sendRequest(self.moviesFeed)
         root = xmlTree.fromstring(moviesFeed)
         return root
 
@@ -101,28 +102,38 @@ class Linkomanija():
         return results
 
     def getRecentTorrentsForMySeries(self):
-        print("\n\n\nPlease wait, hunting torrents for:")
-        [print(seriesTitle) for seriesTitle in self.mySeries]
-        print("\n")
+        print("\n\n\n[*] Please wait, hunting torrents for your series...\n")
 
         for index, seriesTitle in enumerate(self.mySeries):
             maxLinks = results_parser.MAX_LINKS
-            self.getRecentTorrentsByTitle(seriesTitle)
+            self.searchRecentTorrentsByQuery(seriesTitle)
 
             print("[*] " + seriesTitle)
             for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks : (index + 1) * maxLinks]:
                 print(linkomanija.baseUrl + torrentLink)
             print("\n")
 
-    def getRecentTorrentsByTitle(self, seriesTitle):
-        searchResultsHTML = linkomanija.getSearchResultsHTML(seriesTitle)
+    def searchRecentTorrentsByQuery(self, seriesTitle):
+        searchResultsHtml = linkomanija.getSearchResultsHTML(seriesTitle)
         self.searchResultsParser = results_parser.SearchResultsParser()
-        self.searchResultsParser.feed(searchResultsHTML)
+        self.searchResultsParser.feed(searchResultsHtml)
 
-linkomanija = Linkomanija()
+    def getTorrentsByQuery(self, query):
+        self.searchRecentTorrentsByQuery(query)
+        print("[*] Torrents for %s" % query)
+        [print(self.baseUrl + link) for link in self.searchResultsParser.parsedTorrentsLinks]
 
-latestMoviesFeed = linkomanija.getLatestMoviesFeed()
-torrents = linkomanija.parseMoviesFeed(latestMoviesFeed)
-decentlyRatedMovies = linkomanija.getDecentlyRatedMovies(torrents)
+    def getRecentDecentMovies(self):
+        latestMoviesFeed = linkomanija.getLatestMoviesFeed()
+        torrents = linkomanija.parseMoviesFeed(latestMoviesFeed)
+        linkomanija.extractDecentlyRatedMovies(torrents)
 
-linkomanija.getRecentTorrentsForMySeries()
+if __name__ == '__main__':
+    linkomanija = Linkomanija()
+
+    if sys.argv.__len__() > 1:
+        query = sys.argv[1].replace(" ", "+")
+        linkomanija.getTorrentsByQuery(query)
+    else:
+        linkomanija.getRecentDecentMovies()
+        linkomanija.getRecentTorrentsForMySeries()
