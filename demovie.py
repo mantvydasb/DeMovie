@@ -69,7 +69,7 @@ class DeMovie():
             isDecentlyRated = re.search('(<b>Rating:<\/b> [7-9.]+\w)', torrent.description)
             if isDecentlyRated:
                 rating = isDecentlyRated.group(0).strip("<b>Rating:</b> ")
-                print("[%s imdb] %s  [>] %s \n%s \n" %(rating, torrent.title, torrent.link, torrent.torrentLink))
+                print("[%s imdb] %s  [>]  %s \n%s \n" %(rating, torrent.title, torrent.link, torrent.torrentLink))
 
 
     def getLatestMoviesFeed(self):
