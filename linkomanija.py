@@ -21,9 +21,8 @@ class Linkomanija():
 
     username = conf.username
     password = conf.password
-
-    linkomaniaCookie = "PHPSESSID=d44a3mfqe1udekmfi54cb0p2h7;"
-    linkomania = ''
+    cookie = conf.cookie
+    bruter = ''
 
     baseUrl = "https://www.linkomanija.net/"
     loginUrl = baseUrl + "takelogin.php"
@@ -31,15 +30,16 @@ class Linkomanija():
     latestMovieFeed = baseUrl + "rss.php?feed=link&cat[]=29&cat[]=52&cat[]=53&cat[]=61&passkey=14aba47f3165387ebaaf0aba38c140c2"
 
     def __init__(self):
-        self.linkomania = bruter.Bruter(
+        self.bruter = bruter.Bruter(
             loginUrl=self.loginUrl,
             usernameField="username",
             passwordField="password",
-            headers={"Cookie": self.linkomaniaCookie}
+            headers={"Cookie": self.cookie}
         )
+        self.login()
 
     def login(self):
-        response = self.linkomania.attemptLogin(username=self.username, password=self.password)
+        response = self.bruter.attemptLogin(username=self.username, password=self.password)
         return response
 
     def parseXMLfromString(self, string):
@@ -61,7 +61,7 @@ class Linkomanija():
         return torrents
 
     def sendRequest(self, url):
-        response = self.linkomania.getUrlContent(url, self.linkomania.headers)
+        response = self.bruter.getUrlContent(url, self.bruter.headers)
         return response
 
     def getDecentlyRatedMovies(self, torrents):
@@ -76,7 +76,6 @@ class Linkomanija():
         return self.sendRequest(self.latestMovieFeed)
 
 movieSuggestor = Linkomanija()
-movieSuggestor.login()
 
 recentMoviesFeed = movieSuggestor.getLatestMoviesFeed()
 torrenstFeed = movieSuggestor.parseXMLfromString(recentMoviesFeed)
