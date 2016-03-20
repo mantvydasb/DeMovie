@@ -105,10 +105,8 @@ class Linkomanija():
         [print(seriesTitle) for seriesTitle in self.mySeries]
         print("\n")
 
-        for seriesTitle in self.mySeries:
-            self.getRecentTorrentsByTitle(seriesTitle)
-
         for index, seriesTitle in enumerate(self.mySeries):
+            self.getRecentTorrentsByTitle(seriesTitle)
             maxLinks = results_parser.MAX_LINKS
             print("[*] " + seriesTitle)
             for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks : (index + 1) * maxLinks]:
