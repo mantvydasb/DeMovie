@@ -84,7 +84,7 @@ class Linkomanija():
 
     def getDecentlyRatedMovies(self, torrents):
       for torrent in torrents:
-            isDecentlyRated = re.search('(<b>Rating:<\/b> [7-9.]+\w)', torrent.description)
+            isDecentlyRated = re.search('(<b>Rating:<\/b> [6-9.]+\w)', torrent.description)
             if isDecentlyRated:
                 rating = isDecentlyRated.group(0).strip("<b>Rating:</b> ")
                 print("[%s imdb] %s  [>]  %s \n%s \n" %(rating, torrent.title, torrent.link, torrent.torrentLink))
@@ -120,7 +120,9 @@ class Linkomanija():
         self.searchResultsParser.feed(searchResultsHTML)
 
 linkomanija = Linkomanija()
+
 latestMoviesFeed = linkomanija.getLatestMoviesFeed()
 torrents = linkomanija.parseMoviesFeed(latestMoviesFeed)
 decentlyRatedMovies = linkomanija.getDecentlyRatedMovies(torrents)
+
 linkomanija.getRecentTorrentsForMySeries()
