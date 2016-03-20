@@ -137,3 +137,5 @@ if __name__ == '__main__':
     else:
         linkomanija.getRecentDecentMovies()
         linkomanija.getRecentTorrentsForMySeries()
+
+    input()
