@@ -42,14 +42,10 @@ class Linkomanija():
         response = self.bruter.attemptLogin(username=self.username, password=self.password)
         return response
 
-    def parseXMLfromString(self, string):
-        root = xmlTree.fromstring(string)
-        return root
-
-    def parseTorrents(self, root):
+    def parseMoviesFeed(self, feed):
         torrents = []
 
-        for child in root[0]:
+        for child in feed[0]:
             if child.tag == "item":
                 title = str(child.find("title").text).replace(" ", ".")
                 description = child.find("description").text
@@ -73,12 +69,12 @@ class Linkomanija():
 
 
     def getLatestMoviesFeed(self):
-        return self.sendRequest(self.latestMovieFeed)
+        moviesFeed = self.sendRequest(self.latestMovieFeed)
+        root = xmlTree.fromstring(moviesFeed)
+        return root
 
-movieSuggestor = Linkomanija()
-
-recentMoviesFeed = movieSuggestor.getLatestMoviesFeed()
-torrenstFeed = movieSuggestor.parseXMLfromString(recentMoviesFeed)
-torrents = movieSuggestor.parseTorrents(torrenstFeed)
-decentlyRatedMovies = movieSuggestor.getDecentlyRatedMovies(torrents)
+linkomanija = Linkomanija()
+latestMoviesFeed = linkomanija.getLatestMoviesFeed()
+torrents = linkomanija.parseMoviesFeed(latestMoviesFeed)
+decentlyRatedMovies = linkomanija.getDecentlyRatedMovies(torrents)
 
