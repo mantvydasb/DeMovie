@@ -64,7 +64,8 @@ class Linkomanija():
             ],
             'movies': [
                 "the revenant",
-                "deadpool"
+                "deadpool",
+                "dirty grandpa",
             ]
         }
     searchResultsParser = {}
