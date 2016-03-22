@@ -43,8 +43,8 @@ class Linkomanija():
         {
             'series': [
             "the big bang theory",
-            "the 100",
             "walking dead",
+            "the 100",
             "master of none",
             "ballers",
             "the suits",
@@ -120,18 +120,19 @@ class Linkomanija():
         return results
 
     def getTorrentsToWatch(self):
-        for idx, torrentType in enumerate(self.toWatch):
+        offset = 0
+
+        for torrentType in self.toWatch:
             print("\n\n\n[*] Hunting torrents for your %s\n" % torrentType)
             for index, title in enumerate(self.toWatch[torrentType]):
                 maxLinks = results_parser.MAX_LINKS
                 self.searchRecentTorrentsByQuery(title)
 
                 print(Colours.OKGREEN + "[*] " + title + Colours.ENDC)
-                for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks : (index + 1) * maxLinks]:
+                for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks + offset : (index + 1) * maxLinks + offset]:
                     print(linkomanija.baseUrl + torrentLink)
                 print("\n")
-            self.searchResultsParser.parsedTorrentsLinks = []
-
+            offset += self.toWatch[torrentType].__len__() * 5
 
     def searchRecentTorrentsByQuery(self, seriesTitle):
         searchResultsHtml = linkomanija.getSearchResultsHTML(seriesTitle)
