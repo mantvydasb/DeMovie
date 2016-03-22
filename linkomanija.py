@@ -69,8 +69,7 @@ class Linkomanija():
                 "spotlight",
             ]
         }
-    searchResultsParser = {}
-    searchResultsHTML = {}
+    searchResultsParser = ''
 
     def __init__(self):
         self.bruter = bruter.Bruter(
@@ -131,7 +130,7 @@ class Linkomanija():
                 self.searchRecentTorrentsByQuery(title)
                 print(Colours.OKGREEN + "[*] " + title + Colours.ENDC)
 
-                for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks + offset : (index + 1) * maxLinks + offset]:
+                for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks + offset : (index + 1) * maxLinks + offset + 1]:
                     print(linkomanija.baseUrl + torrentLink)
                 print("\n")
 
