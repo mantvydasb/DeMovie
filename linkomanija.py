@@ -66,6 +66,7 @@ class Linkomanija():
                 "the revenant",
                 "deadpool",
                 "dirty grandpa",
+                "spotlight",
             ]
         }
     searchResultsParser = {}
