@@ -124,14 +124,16 @@ class Linkomanija():
 
         for torrentType in self.toWatch:
             print("\n\n\n[*] Hunting torrents for your %s\n" % torrentType)
+
             for index, title in enumerate(self.toWatch[torrentType]):
                 maxLinks = results_parser.MAX_LINKS
                 self.searchRecentTorrentsByQuery(title)
-
                 print(Colours.OKGREEN + "[*] " + title + Colours.ENDC)
+
                 for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks + offset : (index + 1) * maxLinks + offset]:
                     print(linkomanija.baseUrl + torrentLink)
                 print("\n")
+
             offset += self.toWatch[torrentType].__len__() * 5
 
     def searchRecentTorrentsByQuery(self, seriesTitle):
