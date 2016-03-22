@@ -39,27 +39,34 @@ class Linkomanija():
     loginUrl    = baseUrl + "takelogin.php"
     searchUrl   = baseUrl + "browse.php?incldead=0&search="
     moviesFeed  = baseUrl + "rss.php?feed=link&cat[]=29&cat[]=52&cat[]=53&cat[]=61&passkey=14aba47f3165387ebaaf0aba38c140c2"
-    mySeries    = [
-        "the big bang theory",
-        "the 100",
-        "walking dead",
-        "master of none",
-        "ballers",
-        "the suits",
-        "louie ck",
-        "last ship",
-        "odd couple",
-        "fear the walking dead",
-        "inside amy schumer",
-        "episodes",
-        "fargo",
-        "homeland",
-        "modern family",
-        "mr robot",
-        "silicon valley",
-        "halt and catch fire",
-        "the x-files",
-    ]
+    toWatch     = \
+        {
+            'series': [
+            "the big bang theory",
+            "the 100",
+            "walking dead",
+            "master of none",
+            "ballers",
+            "the suits",
+            "louie ck",
+            "last ship",
+            "odd couple",
+            "fear the walking dead",
+            "inside amy schumer",
+            "episodes",
+            "fargo",
+            "homeland",
+            "modern family",
+            "mr robot",
+            "silicon valley",
+            "halt and catch fire",
+            "the x-files"
+            ],
+            'movies': [
+                "the revenant",
+                "deadpool"
+            ]
+        }
     searchResultsParser = {}
     searchResultsHTML = {}
 
@@ -111,17 +118,19 @@ class Linkomanija():
         results = self.sendRequest(url)
         return results
 
-    def getRecentTorrentsForMySeries(self):
-        print("\n\n\n[*] Please wait, hunting torrents for your series...\n")
+    def getTorrentsToWatch(self):
+        for idx, torrentType in enumerate(self.toWatch):
+            print("\n\n\n[*] Hunting torrents for your %s\n" % torrentType)
+            for index, title in enumerate(self.toWatch[torrentType]):
+                maxLinks = results_parser.MAX_LINKS
+                self.searchRecentTorrentsByQuery(title)
 
-        for index, seriesTitle in enumerate(self.mySeries):
-            maxLinks = results_parser.MAX_LINKS
-            self.searchRecentTorrentsByQuery(seriesTitle)
+                print(Colours.OKGREEN + "[*] " + title + Colours.ENDC)
+                for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks : (index + 1) * maxLinks]:
+                    print(linkomanija.baseUrl + torrentLink)
+                print("\n")
+            self.searchResultsParser.parsedTorrentsLinks = []
 
-            print(Colours.OKGREEN + "[*] " + seriesTitle + Colours.ENDC)
-            for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks : (index + 1) * maxLinks]:
-                print(linkomanija.baseUrl + torrentLink)
-            print("\n")
 
     def searchRecentTorrentsByQuery(self, seriesTitle):
         searchResultsHtml = linkomanija.getSearchResultsHTML(seriesTitle)
@@ -146,6 +155,6 @@ if __name__ == '__main__':
         linkomanija.getTorrentsByQuery(query)
     else:
         linkomanija.getRecentDecentMovies()
-        linkomanija.getRecentTorrentsForMySeries()
+        linkomanija.getTorrentsToWatch()
 
     input()
