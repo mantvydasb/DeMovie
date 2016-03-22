@@ -17,29 +17,28 @@ class Colours:
     UNDERLINE = '\033[4m'
 
 class Torrent:
-    title       = ''
-    description = ''
-    link        = ''
-    uploadDate  = ''
+    title           = ''
+    description     = ''
+    descriptionLink = ''
+    uploadDate      = ''
 
     def __init__(self, title, description, link, uploadDate):
-        self.title = title
-        self.description = description
-        self.link = link
-        self.torrentLink = str(link).replace("details", "download").replace("&hit=1","") + '&name=' + title + "_.torrent"
-        self.uploadDate = uploadDate
-
+        self.title           = title
+        self.description     = description
+        self.descriptionLink = link
+        self.downloadLink    = str(link).replace("details", "download").replace("&hit=1", "") + '&name=' + title.replace(" ", ".") + "_.torrent"
+        self.uploadDate      = uploadDate
 
 class Linkomanija():
-    username    = conf.username
-    password    = conf.password
-    cookie      = conf.cookie
-    bruter      = ''
-    baseUrl     = "https://www.linkomanija.net/"
-    loginUrl    = baseUrl + "takelogin.php"
-    searchUrl   = baseUrl + "browse.php?incldead=0&search="
-    moviesFeed  = baseUrl + "rss.php?feed=link&cat[]=29&cat[]=52&cat[]=53&cat[]=61&passkey=14aba47f3165387ebaaf0aba38c140c2"
-    toWatch     = \
+    username   = conf.username
+    password   = conf.password
+    cookie     = conf.cookie
+    bruter     = ''
+    baseUrl    = "https://www.linkomanija.net/"
+    loginUrl   = baseUrl + "takelogin.php"
+    searchUrl  = baseUrl + "browse.php?incldead=0&search="
+    moviesFeed = baseUrl + "rss.php?feed=link&cat[]=29&cat[]=52&cat[]=53&cat[]=61&passkey=14aba47f3165387ebaaf0aba38c140c2"
+    toWatch    = \
         {
             'series': [
             "the big bang theory",
@@ -63,13 +62,14 @@ class Linkomanija():
             "the x-files"
             ],
             'movies': [
+                "spotlight",
                 "the revenant",
                 "deadpool",
-                "dirty grandpa",
-                "spotlight",
+                "dirty grandpa"
             ]
         }
-    searchResultsParser = ''
+    searchResultsParser = results_parser.SearchResultsParser()
+    parsedTorrentsCount = 0
 
     def __init__(self):
         self.bruter = bruter.Bruter(
@@ -89,7 +89,7 @@ class Linkomanija():
 
         for child in feed[0]:
             if child.tag == "item":
-                title = str(child.find("title").text).replace(" ", ".")
+                title = str(child.find("title").text)
                 description = child.find("description").text
                 link = child.find("link").text
                 uploadDate = child.find("pubDate").text
@@ -106,7 +106,11 @@ class Linkomanija():
             isDecentlyRated = re.search('(<b>Rating:<\/b> [6-9.]+\w)', torrent.description)
             if isDecentlyRated:
                 rating = isDecentlyRated.group(0).strip("<b>Rating:</b> ")
-                print("[%s imdb] %s  [>]  %s \n%s \n" %(rating, torrent.title, torrent.link, torrent.torrentLink))
+                print(Colours.HEADER
+                      + '[' + rating + Colours.ENDC + ' imdb] '
+                      + Colours.WARNING + torrent.title + Colours.ENDC + Colours.HEADER + '  //  '
+                      + Colours.ENDC + torrent.descriptionLink
+                      + '\n' + torrent.downloadLink)
 
     def getLatestMoviesFeed(self):
         moviesFeed = self.sendRequest(self.moviesFeed)
@@ -121,25 +125,29 @@ class Linkomanija():
 
     def getTorrentsToWatch(self):
         offset = 0
+        printedTorrentsCount = 0
+        foundTorrentsCount = 0
 
         for torrentType in self.toWatch:
             print("\n\n\n[*] Hunting torrents for your %s\n" % torrentType)
 
-            for index, title in enumerate(self.toWatch[torrentType]):
-                maxLinks = results_parser.MAX_LINKS
-                self.searchRecentTorrentsByQuery(title)
-                print(Colours.OKGREEN + "[*] " + title + Colours.ENDC)
+            for index, torrentTitle in enumerate(self.toWatch[torrentType]):
+                foundTorrentsCount = self.searchRecentTorrentsByQuery(torrentTitle)
+                print(Colours.OKGREEN + "[*] " + torrentTitle + Colours.ENDC)
 
-                for torrentLink in self.searchResultsParser.parsedTorrentsLinks[index * maxLinks + offset : (index + 1) * maxLinks + offset + 1]:
-                    print(linkomanija.baseUrl + torrentLink)
+                for torrentDownloadLink in self.searchResultsParser.parsedTorrentsLinks[printedTorrentsCount : (index + 1) * foundTorrentsCount + offset + 1]:
+                    print(linkomanija.baseUrl + torrentDownloadLink)
+                    printedTorrentsCount += 1
                 print("\n")
-
-            offset += self.toWatch[torrentType].__len__() * 5
+            offset += printedTorrentsCount
 
     def searchRecentTorrentsByQuery(self, seriesTitle):
         searchResultsHtml = linkomanija.getSearchResultsHTML(seriesTitle)
         self.searchResultsParser = results_parser.SearchResultsParser()
+        self.parsedTorrentsCount = self.searchResultsParser.parsedTorrentsLinks.__len__()
         self.searchResultsParser.feed(searchResultsHtml)
+        torrentsFoundCount = self.searchResultsParser.parsedTorrentsLinks.__len__() - self.parsedTorrentsCount
+        return torrentsFoundCount
 
     def getTorrentsByQuery(self, query):
         self.searchRecentTorrentsByQuery(query)
