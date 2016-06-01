@@ -59,13 +59,28 @@ class Linkomanija():
             "mr robot",
             "silicon valley",
             "halt and catch fire",
-            "the x-files"
+            "the x-files",
+            "narcos"
             ],
             'movies': [
                 "spotlight",
-                "the revenant",
-                "deadpool",
-                "dirty grandpa"
+                "criminals",
+                "snowden",
+		        "money monster",
+                "mother's day",
+                "a hologram for the king",
+                "barbershop: the next cut",
+                "neighbors 2: sorority rising",
+                "the boss",
+                "keanu",
+                "miracles from heaven",
+                "the meddler",
+                "money monster",
+                "secret in their eyes",
+                "larry crown",
+                "love, wedding, marriage",
+                "life happens",
+                "hail, caesar",
             ]
         }
     searchResultsParser = results_parser.SearchResultsParser()
