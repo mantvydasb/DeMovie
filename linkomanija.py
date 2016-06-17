@@ -79,7 +79,6 @@ class Linkomanija():
                 "secret in their eyes",
                 "larry crown",
                 "love, wedding, marriage",
-                "life happens",
                 "hail, caesar",
             ]
         }

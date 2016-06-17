@@ -1,0 +1,3 @@
+#!/bin/bash
+# Script used to launch the volumr server when machine boots;
+sudo cp /mnt/HDD1.2/Dev/Python/DeMovie/linkomanija.desktop /usr/share/applications/

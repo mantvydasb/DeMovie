@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Linkomanija
+Exec=python3.4 /mnt/HDD1.2/Dev/Python/DeMovie/linkomanija.py
+StartupNotify=true
+Terminal=true
+Type=Application
+Icon=/mnt/HDD1.2/Installs/Dev/Android/android-studio-lnx/android-studio/bin/studio.ico
